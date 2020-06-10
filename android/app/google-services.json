@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "706710995628",
+    "firebase_url": "https://e-commerce-7b4fb.firebaseio.com",
+    "project_id": "e-commerce-7b4fb",
+    "storage_bucket": "e-commerce-7b4fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706710995628:android:8532f22de8c4f6b527d509",
+        "android_client_info": {
+          "package_name": "com.yousseftaha.e_commerce"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706710995628-h0qjniium6k7rojkq9khkgei8icmparn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxMGUp3PwLdW-_KEvPxYD-MvFhtZYoouI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706710995628-h0qjniium6k7rojkq9khkgei8icmparn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
