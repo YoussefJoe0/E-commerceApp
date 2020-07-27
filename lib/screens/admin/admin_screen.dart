@@ -1,6 +1,7 @@
 import 'package:e_commerce/constants.dart';
 import 'package:e_commerce/screens/admin/addProduct.dart';
 import 'package:e_commerce/screens/admin/mangeProduct.dart';
+import 'package:e_commerce/screens/admin/orders_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,9 @@ class AdminScreen extends StatelessWidget {
             padding: EdgeInsets.all(8),
             textColor: Colors.white,
             color: Colors.purple,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, OrdersScreen.id);
+            },
             child: Text('View Orders'),
           ),
         ],

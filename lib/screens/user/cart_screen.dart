@@ -67,7 +67,7 @@ class _CartScreenState extends State<CartScreen> {
                               CircleAvatar(
                                 radius: screenHeight * .15 / 2,
                                 backgroundImage:
-                                    AssetImage(products[index].pLocation),
+                                    NetworkImage(products[index].pLocation),
                               ),
                               Expanded(
                                 child: Row(

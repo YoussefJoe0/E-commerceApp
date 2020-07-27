@@ -20,6 +20,17 @@ class Store {
    return _firestore.collection(kProductCollection).snapshots();
   }
 
+  Stream<QuerySnapshot> loadOrders(){
+      return _firestore.collection(kOrders).snapshots();
+  }
+   Stream<QuerySnapshot> loadOrderDetails(documentId) {
+    return _firestore
+        .collection(kOrders)
+        .document(documentId)
+        .collection(kOrdersDetails)
+        .snapshots();
+  }
+
   deleteProduct(documntId){
     _firestore.collection(kProductCollection).document(documntId).delete();
   }
@@ -29,17 +40,19 @@ class Store {
     _firestore.collection(kProductCollection).document().updateData(data);
   }
 
-  storeOrders(data, List<Product> products){
-     var documentRef  = _firestore.collection(kOrders).document();
-     documentRef.setData(data);
-     for (var product in products) {
-            documentRef.collection(kOrdersDetails).document().setData({
-               kProductName: product.pName,
+ storeOrders(data, List<Product> products) {
+    var documentRef = _firestore.collection(kOrders).document();
+    documentRef.setData(data);
+    for (var product in products) {
+      documentRef.collection(kOrdersDetails).document().setData({
+        kProductName: product.pName,
         kProductPrice: product.pPrice,
         kProductQuantity: product.pQuantity,
-        kProductLocation: product.pLocation
-            });
-
-     }
+        kProductLocation: product.pLocation,
+        kProductCategory: product.pCategory
+      });
+    }
   }
+
+
 }

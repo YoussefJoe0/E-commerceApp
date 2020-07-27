@@ -9,10 +9,13 @@ class Auth {
     return authResult;
   }
 
-
   Future<AuthResult> signin(String email, String password) async {
     final authResult = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     return authResult;
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
   }
 }

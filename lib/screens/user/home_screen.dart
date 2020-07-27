@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce/constants.dart';
 import 'package:e_commerce/models/product.dart';
+import 'package:e_commerce/screens/login_screen.dart';
 import 'package:e_commerce/screens/user/product_info.dart';
 import 'package:e_commerce/services/auth.dart';
 import 'package:e_commerce/services/store.dart';
@@ -8,6 +9,7 @@ import 'package:e_commerce/wedgits/product_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../functions.dart';
 import 'cart_screen.dart';
 
@@ -48,7 +50,13 @@ class _HomeScreenState extends State<HomeScreen>
           fixedColor: kButtonColor,
           currentIndex: _bottonBarIndex,
           type: BottomNavigationBarType.fixed,
-          onTap: (value) {
+          onTap: (value) async {
+            if (value == 2) {
+              SharedPreferences pref = await SharedPreferences.getInstance();
+              pref.clear();
+              await _auth.signOut();
+              Navigator.popAndPushNamed(context, LoginScreen.id);
+            }
             setState(() {
               _bottonBarIndex = value;
             });
@@ -63,12 +71,8 @@ class _HomeScreenState extends State<HomeScreen>
               icon: Icon(Icons.add),
             ),
             BottomNavigationBarItem(
-              title: Text('3'),
-              icon: Icon(Icons.add),
-            ),
-            BottomNavigationBarItem(
-              title: Text('4'),
-              icon: Icon(Icons.add),
+              title: Text('Sign Out'),
+              icon: Icon(Icons.close),
             ),
           ]),
       appBar: AppBar(
@@ -108,9 +112,9 @@ class _HomeScreenState extends State<HomeScreen>
         child: TabBarView(
           children: [
             jacketView(),
-            productView(kTrousers, _products),
-            productView(kTshirts, _products),
-            productView(kShoes, _products),
+            ProductsView(kTrousers, _products),
+            ProductsView(kTshirts, _products),
+            ProductsView(kShoes, _products),
           ],
           controller: _tabController,
         ),
@@ -142,7 +146,9 @@ class _HomeScreenState extends State<HomeScreen>
             products = GetProductByCategory(kJackets, _products);
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: .8, crossAxisCount: 2),
+                childAspectRatio: .8,
+                crossAxisCount: 2,
+              ),
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
@@ -152,11 +158,9 @@ class _HomeScreenState extends State<HomeScreen>
                   },
                   child: Stack(
                     children: <Widget>[
-                      Positioned.fill(
-                        child: Image(
-                          fit: BoxFit.fill,
-                          image: AssetImage(products[index].pLocation),
-                        ),
+                      Image.network(
+                        products[index].pLocation,
+                        fit: BoxFit.contain,
                       ),
                       Positioned(
                         bottom: 0,
@@ -189,7 +193,9 @@ class _HomeScreenState extends State<HomeScreen>
               itemCount: products.length,
             );
           } else {
-            return Center(child: Text('Loading..'));
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           }
         });
   }

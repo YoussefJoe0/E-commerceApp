@@ -23,3 +23,4 @@ const kOrders = 'Orders';
 const kOrdersDetails = 'OrdersDetails';
 const kTotalPrice  = 'TotalPrice';
 const kAddress = 'Address';
+const kKeepMeLogedIn = 'keepMeLogedIn';

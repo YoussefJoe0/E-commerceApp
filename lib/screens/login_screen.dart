@@ -9,25 +9,41 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import '../wedgits/custom_textfield.dart';
 import '../services/auth.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../constants.dart';
 
 import 'admin/admin_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+class LoginScreen extends StatefulWidget {
   static String id = 'LoginScreen';
+   final GlobalKey<FormState> globalKey  = GlobalKey<FormState>();
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+ 
+
   String email, password;
+
   final _auth = Auth();
+
   bool isAdmin = false;
-  final adminPassword = 'admin12345';
+
+  bool keepMeLogin = false;
+
+  final adminPassword = '000000';
+
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return   Scaffold(
       backgroundColor: kMainColor,
       body: ModalProgressHUD(
-        inAsyncCall: Provider.of<ModelHud>(context, listen: false).isLoading,
+        inAsyncCall: Provider.of<ModelHud>(context).isLoading,
         child: Form(
-          key: _globalKey,
+          key: widget.globalKey ,
           child: ListView(
             children: <Widget>[
               Container(
@@ -62,14 +78,35 @@ class LoginScreen extends StatelessWidget {
                   },
                   hint: 'Enter your email',
                   icon: Icons.email),
-              SizedBox(height: height * .02),
+              SizedBox(height: height * .05),
               CustomTextField(
                   onClick: (value) {
                     password = value;
                   },
                   hint: 'Enter your password',
                   icon: Icons.lock),
-              SizedBox(height: height * .05),
+              Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                  children: [
+                    Theme(
+                      data: ThemeData(unselectedWidgetColor: Colors.white),
+                      child: Checkbox(
+                        value: keepMeLogin,
+                        onChanged: (val) {
+                          setState(() {
+                            keepMeLogin = val;
+                          });
+                        },
+                      ),
+                    ),
+                    Text(
+                      'Remmeber Me',
+                      style: TextStyle(color: Colors.white),
+                    )
+                  ],
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 100),
                 child: Builder(
@@ -79,6 +116,9 @@ class LoginScreen extends StatelessWidget {
                     ),
                     color: kButtonColor,
                     onPressed: () {
+                      if (keepMeLogin == true) {
+                        keepUserLogedIn();
+                      }
                       _validate(context);
                     },
                     child: Text(
@@ -122,32 +162,30 @@ class LoginScreen extends StatelessWidget {
                     Expanded(
                         child: GestureDetector(
                       onTap: () {
-                        Provider.of<AdminMode>(context, listen: false).changeIsAdmin(true);
+                        Provider.of<AdminMode>(context, listen: false)
+                            .changeIsAdmin(true);
                       },
                       child: Text(
                         "I'm an admin",
                         style: TextStyle(
-                          color: Provider.of<AdminMode>(context)
-                                  .isAdmin
+                          color: Provider.of<AdminMode>(context).isAdmin
                               ? kMainColor
                               : Colors.white,
                         ),
                       ),
                     )),
                     Expanded(
-                      child: GestureDetector (
-                        onTap: () async{
-                         await Provider.of<AdminMode>(context, listen: false)
+                      child: GestureDetector(
+                        onTap: () async {
+                          await Provider.of<AdminMode>(context, listen: false)
                               .changeIsAdmin(false);
                         },
                         child: Text(
                           "I'm a user",
                           style: TextStyle(
-                            color:
-                                Provider.of<AdminMode>(context)
-                                        .isAdmin
-                                    ? Colors.white
-                                    : kMainColor,
+                            color: Provider.of<AdminMode>(context).isAdmin
+                                ? Colors.white
+                                : kMainColor,
                           ),
                         ),
                       ),
@@ -163,41 +201,42 @@ class LoginScreen extends StatelessWidget {
   }
 
   void _validate(BuildContext context) async {
-    final modelHud = Provider.of<ModelHud>(context, listen: false);
-    modelHud.changeisLoading(true);
-    if (_globalKey.currentState.validate()) {
-      _globalKey.currentState.save();
+    final modelhud = Provider.of<ModelHud>(context, listen: false);
+    modelhud.changeisLoading(true);
+    if (widget.globalKey.currentState.validate()) {
+      widget.globalKey.currentState.save();
       if (Provider.of<AdminMode>(context, listen: false).isAdmin) {
         if (password == adminPassword) {
           try {
-            await _auth.signin(email, password);
+            await _auth.signin(email.trim(), password.trim());
             Navigator.pushNamed(context, AdminScreen.id);
           } catch (e) {
-            modelHud.changeisLoading(false);
+            modelhud.changeisLoading(false);
             Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text(e.message()),
+              content: Text(e.message),
             ));
           }
         } else {
-          modelHud.changeisLoading(false);
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Something went wrong'),
-            ),
-          );
+          modelhud.changeisLoading(false);
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('Something went wrong !'),
+          ));
         }
       } else {
         try {
-          await _auth.signin(email, password);
+          await _auth.signin(email.trim(), password.trim());
           Navigator.pushNamed(context, HomeScreen.id);
         } catch (e) {
-          modelHud.changeisLoading(false);
           Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(e.message()),
+            content: Text(e.message),
           ));
         }
       }
     }
-    modelHud.changeisLoading(false);
+    modelhud.changeisLoading(false);
+  }
+  void keepUserLogedIn() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setBool(kKeepMeLogedIn, keepMeLogin);
   }
 }

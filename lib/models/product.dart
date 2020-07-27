@@ -1,7 +1,7 @@
 class Product {
   String pName;
   String pPrice;
-  String pLocation;
+  dynamic pLocation;
   String pDescription;
   String pCategory;
   String pId;

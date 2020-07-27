@@ -23,9 +23,9 @@ class _ProductInfoState extends State<ProductInfo> {
           Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: Image(
-              fit: BoxFit.fill,
-              image: AssetImage(product.pLocation),
+            child: Image.network(
+              product.pLocation,
+              fit: BoxFit.contain,
             ),
           ),
           Padding(
@@ -36,10 +36,10 @@ class _ProductInfoState extends State<ProductInfo> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.arrow_back_ios)),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.arrow_back_ios)),
                   GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(context, CartScreen.id);
@@ -54,22 +54,19 @@ class _ProductInfoState extends State<ProductInfo> {
             child: Column(
               children: <Widget>[
                 Opacity(
-                  opacity: .5,
                   child: Container(
                     color: Colors.white,
-                    height: MediaQuery.of(context).size.height * .3,
                     width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * .3,
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
                             product.pName,
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: kMainColor),
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
                             height: 10,
@@ -77,19 +74,15 @@ class _ProductInfoState extends State<ProductInfo> {
                           Text(
                             product.pDescription,
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: kMainColor),
+                                fontSize: 16, fontWeight: FontWeight.w800),
                           ),
                           SizedBox(
                             height: 10,
                           ),
                           Text(
-                            '\$ ${product.pPrice}',
+                            '\$${product.pPrice}',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: kMainColor),
+                                fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
                             height: 10,
@@ -99,96 +92,89 @@ class _ProductInfoState extends State<ProductInfo> {
                             children: <Widget>[
                               ClipOval(
                                 child: Material(
-                                  color: kButtonColor,
+                                  color: kMainColor,
                                   child: GestureDetector(
                                     onTap: add,
                                     child: SizedBox(
                                       child: Icon(Icons.add),
-                                      height: 28,
-                                      width: 28,
+                                      height: 32,
+                                      width: 32,
                                     ),
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                width: 10,
-                              ),
                               Text(
                                 _quantity.toString(),
-                                style: TextStyle(fontSize: 50),
-                              ),
-                              SizedBox(
-                                width: 10,
+                                style: TextStyle(fontSize: 60),
                               ),
                               ClipOval(
                                 child: Material(
-                                  color: kButtonColor,
+                                  color: kMainColor,
                                   child: GestureDetector(
                                     onTap: subtract,
                                     child: SizedBox(
                                       child: Icon(Icons.remove),
-                                      height: 28,
-                                      width: 28,
+                                      height: 32,
+                                      width: 32,
                                     ),
                                   ),
                                 ),
                               ),
                             ],
-                          ),
+                          )
                         ],
                       ),
                     ),
                   ),
+                  opacity: .5,
                 ),
                 ButtonTheme(
                   minWidth: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * .10,
+                  height: MediaQuery.of(context).size.height * .08,
                   child: Builder(
                     builder: (context) => RaisedButton(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
+                          borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              topLeft: Radius.circular(10))),
+                      color: kMainColor,
                       onPressed: () {
                         addToCart(context, product);
                       },
-                      color: kButtonColor,
                       child: Text(
                         'Add to Cart'.toUpperCase(),
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Colors.white),
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );
   }
 
-  void subtract() {
+  subtract() {
     if (_quantity > 1) {
       setState(() {
         _quantity--;
+        print(_quantity);
       });
     }
   }
 
-  void add() {
+  add() {
     setState(() {
       _quantity++;
+      print(_quantity);
     });
   }
 
   void addToCart(context, product) {
-     CartItem cartItem = Provider.of<CartItem>(context, listen: false);
+    CartItem cartItem = Provider.of<CartItem>(context, listen: false);
     product.pQuantity = _quantity;
     bool exist = false;
     var productsInCart = cartItem.products;
